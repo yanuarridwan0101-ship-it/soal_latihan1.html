@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Latihan Irodori — Pink &amp; Kuning</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  .container {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    max-width: 760px;
+    width: 100%;
+    padding: 30px;
+    position: relative;
+  }
+  h1 { font-size: 1.4em; color: #333; margin-bottom: 6px; text-align: center; }
+  .subtitle { text-align: center; color: #888; font-size: 0.85em; margin-bottom: 20px; }
+
+  .menu { text-align: center; }
+  .menu .btn { margin-top: 12px; }
+  .menu-desc { color: #666; font-size: 0.95em; margin-bottom: 8px; line-height: 1.6; }
+  .badge-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 16px 0; }
+  .badge {
+    background: #f0f2ff; color: #667eea; padding: 6px 14px; border-radius: 20px;
+    font-size: 0.85em; font-weight: 600;
+  }
+
+  .mode-explanation {
+    background: #f8f9ff;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 16px 0;
+    text-align: left;
+    font-size: 0.88em;
+    line-height: 1.65;
+    color: #444;
+    border-left: 4px solid #667eea;
+  }
+  .mode-explanation > strong {
+    color: #667eea;
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.95em;
+  }
+  .mode-explanation .mode-item {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #dde1ff;
+  }
+  .mode-explanation .mode-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .mode-explanation .mode-item strong { color: #333; }
+  .mode-explanation .mode-item small { display: block; color: #666; margin-top: 3px; }
+
+  .session-box {
+    background: #f8f9ff;
+    border: 2px dashed #667eea;
+    border-radius: 12px;
+    padding: 15px;
+    margin: 15px 0;
+    text-align: left;
+  }
+  .session-info { display: flex; align-items: center; gap: 8px; font-size: 0.95em; color: #444; flex-wrap: wrap;}
+  .session-info strong { color: #667eea; font-family: monospace; font-size: 1.1em; background: #e8ecff; padding: 2px 8px; border-radius: 6px;}
+  .session-btn { background: #667eea; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 0.85em; margin-top: 10px; width: 100%; font-weight: bold; transition: 0.2s;}
+  .session-btn:hover { background: #764ba2; }
+
+  .input-group { text-align: left; margin-bottom: 15px; }
+  .input-group label { display: block; font-size: 0.9em; font-weight: 600; color: #444; margin-bottom: 5px; }
+  .input-group input { 
+    width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1em; outline: none; transition: 0.2s;
+  }
+  .input-group input:focus { border-color: #667eea; box-shadow: 0 0 5px rgba(102,126,234,0.3); }
+
+  .progress-bar {
+    height: 8px; background: #eee; border-radius: 10px; overflow: hidden; margin-bottom: 20px;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, #667eea, #764ba2);
+    width: 0%; transition: width 0.3s ease;
+  }
+  .info-row {
+    display: flex; justify-content: space-between; font-size: 0.85em;
+    color: #666; margin-bottom: 12px; font-weight: 600;
+  }
+  .timer-box {
+    background: #fff3cd; color: #856404; padding: 4px 12px; border-radius: 20px;
+    font-weight: 700; font-size: 0.85em; transition: all 0.2s;
+  }
+  .timer-box.warning { background: #f8d7da; color: #721c24; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.08);} }
+
+  .question {
+    font-size: 1.05em; color: #222; margin-bottom: 20px; line-height: 1.75;
+    min-height: 60px;
+    white-space: pre-line;
+  }
+  .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .option {
+    padding: 14px 18px; border: 2px solid #e0e0e0; border-radius: 12px;
+    cursor: pointer; transition: all 0.2s; font-size: 1em; color: #333;
+    background: #fafafa; text-align: left; display: flex; align-items: center; gap: 10px;
+  }
+  .option:hover:not(.disabled) { border-color: #667eea; background: #f0f2ff; transform: translateX(4px); }
+  .option .label { font-weight: 700; color: #667eea; min-width: 22px; }
+  .option.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+  .option.correct .label { color: #28a745; }
+  .option.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+  .option.wrong .label { color: #dc3545; }
+  .option.disabled { cursor: not-allowed; }
+  .option.selected { border-color: #667eea; background: #e8ecff; }
+
+  .feedback {
+    padding: 12px 14px; border-radius: 10px; font-weight: 600;
+    margin-bottom: 15px; display: none; text-align: left; line-height: 1.6;
+  }
+  .feedback.show { display: block; }
+  .feedback.correct { background: #d4edda; color: #155724; }
+  .feedback.wrong { background: #f8d7da; color: #721c24; }
+  .feedback small { display: block; margin-top: 6px; font-weight: 400; opacity: 0.85; }
+
+  .btn {
+    width: 100%; padding: 14px; border: none; border-radius: 12px;
+    font-size: 1em; font-weight: 700; cursor: pointer; transition: all 0.2s;
+    background: linear-gradient(90deg, #667eea, #764ba2); color: #fff;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.4); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .btn.secondary { background: #eee; color: #333; }
+  .btn.secondary:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+  .btn-row { display: flex; gap: 10px; }
+
+  .result-screen { text-align: center; display: none; }
+  .result-screen.show { display: block; }
+  .score-big {
+    font-size: 3.5em; font-weight: 800;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin: 10px 0;
+  }
+  .result-detail { color: #666; margin-bottom: 20px; font-size: 1.05em; line-height: 1.6; }
+  .review-list { text-align: left; margin-top: 20px; max-height: 420px; overflow-y: auto; }
+  .review-item { padding: 12px; border-bottom: 1px solid #eee; font-size: 0.9em; }
+  .review-item.correct { border-left: 4px solid #28a745; }
+  .review-item.wrong { border-left: 4px solid #dc3545; }
+  .review-q { font-weight: 600; margin-bottom: 4px; color: #333; white-space: pre-line; }
+  .review-a { color: #666; font-size: 0.9em; }
+  .review-a .ok { color: #28a745; font-weight: 700; }
+  .review-a .no { color: #dc3545; font-weight: 700; }
+  .review-p {
+    color: #444; margin-top: 6px; font-size: 0.88em;
+    background: #f8f9ff; padding: 8px 10px; border-radius: 6px;
+    border-left: 3px solid #667eea;
+  }
+
+  .lb-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.92em; }
+  .lb-table th, .lb-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #eee; }
+  .lb-table th { background: #f0f2ff; color: #667eea; font-weight: 700; }
+  .lb-table tr:nth-child(1) td { font-weight: 700; color: #b8860b; }
+  .lb-empty { color: #999; text-align: center; padding: 30px; font-style: italic; }
+
+  .hidden { display: none !important; }
+
+  /* ===== COUNTDOWN OVERLAY ===== */
+  .countdown-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 20, 40, 0.92);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+  .countdown-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .countdown-number {
+    font-size: 8rem;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 40px rgba(102,126,234,0.9), 0 0 80px rgba(118,75,162,0.8);
+    line-height: 1;
+    transform: scale(0.4);
+    opacity: 0;
+    letter-spacing: 4px;
+    text-align: center;
+  }
+  .countdown-number.pop {
+    animation: countdownPop 0.85s cubic-bezier(0.2, 0.9, 0.3, 1.3) forwards;
+  }
+  .countdown-number.go {
+    font-size: 4.5rem;
+    background: linear-gradient(90deg, #ffd86b, #ff8fb1, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 6px;
+  }
+  @keyframes countdownPop {
+    0%   { transform: scale(0.4) rotate(-8deg); opacity: 0; }
+    40%  { transform: scale(1.15) rotate(2deg); opacity: 1; }
+    70%  { transform: scale(1) rotate(0deg); opacity: 1; }
+    100% { transform: scale(1.3) rotate(0deg); opacity: 0; }
+  }
+  .countdown-hint {
+    color: #cfd4ff;
+    font-size: 0.95em;
+    letter-spacing: 1px;
+    margin-top: 20px;
+    opacity: 0;
+    animation: hintFade 1s 0.3s forwards;
+    text-transform: uppercase;
+  }
+  @keyframes hintFade { to { opacity: 0.8; } }
+
+  @media (max-width: 500px) {
+    .container { padding: 20px; }
+    h1 { font-size: 1.2em; }
+    .question { font-size: 1em; }
+    .countdown-number { font-size: 6rem; }
+    .countdown-number.go { font-size: 2.8rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ===== COUNTDOWN OVERLAY ===== -->
+  <div id="countdown-overlay" class="countdown-overlay">
+    <div id="countdown-number" class="countdown-number"></div>
+    <div class="countdown-hint" id="countdown-hint">Bersiap…</div>
+  </div>
+
+  <div id="menu-screen" class="menu">
+    <h1>🇯🇵 Latihan Irodori Pink &amp; Kuning</h1>
+    <p class="subtitle" id="menu-subtitle">0 Soal • Referensi IRODORI</p>
+    
+    <div class="badge-row">
+      <span class="badge" id="timer-badge">⏱️ Min 30s</span>
+      <span class="badge">🔀 Soal Acak</span>
+      <span class="badge">🏆 Leaderboard</span>
+      <span class="badge">🔊 Suara</span>
+    </div>
+
+    <div class="session-box">
+      <div class="session-info">
+        🗂️ Sesi Aktif: <strong id="session-id-display">Memuat...</strong>
+      </div>
+      <p style="font-size: 0.8em; color: #666; margin-top: 8px;">
+        *Klik tombol di bawah untuk menyalin link sesi ini dan bagikan ke siswa. Semua laporan dari link ini akan dikelompokkan dalam 1 sesi.
+      </p>
+      <button class="session-btn" id="copy-session-btn">📋 Salin Link Sesi</button>
+    </div>
+
+    <div class="input-group">
+      <label>Nama Siswa</label>
+      <input type="text" id="student-name" placeholder="Masukkan nama lengkap..." />
+    </div>
+    <div class="input-group">
+      <label>Kelas</label>
+      <input type="text" id="student-class" placeholder="Contoh: X-A / XII IPA 1" />
+    </div>
+
+    <p class="menu-desc">Pilih mode di bawah ini:</p>
+
+    <div class="mode-explanation">
+      <strong>📖 Penjelasan Mode Latihan &amp; Ujian</strong>
+      <div class="mode-item">
+        <strong>🎯 Mode Latihan (Feedback Langsung)</strong>
+        <small>Setelah memilih jawaban, kamu langsung melihat apakah benar (✅) atau salah (❌), plus <b>penjelasan singkat (💡)</b> di bawahnya. Cocok untuk <b>belajar sambil memahami pola</b>, kesalahan, dan tata bahasa.</small>
+      </div>
+      <div class="mode-item">
+        <strong>📊 Mode Ujian (Hasil di Akhir)</strong>
+        <small>Jawaban <b>tidak</b> diberi feedback selama quiz. Skor dan <b>review lengkap beserta penjelasan</b> baru muncul setelah semua soal selesai. Cocok untuk <b>mengukur pemahaman</b> secara objektif.</small>
+      </div>
+      <div class="mode-item">
+        <strong>📤 Laporan Otomatis</strong>
+        <small>Setelah selesai, nilai akan otomatis dikirim ke Google Sheets dan Email Guru.</small>
+      </div>
+    </div>
+
+    <button class="btn" id="start-normal-btn">🎯 Mode Latihan (Feedback Langsung)</button>
+    <button class="btn secondary" id="start-exam-btn">📊 Mode Ujian (Hasil di Akhir)</button>
+    <button class="btn secondary" id="show-lb-btn">🏆 Lihat Leaderboard</button>
+  </div>
+
+  <div id="quiz-screen" class="hidden">
+    <div class="info-row">
+      <span id="progress-text">Soal 1 / 0</span>
+      <span id="timer-display" class="timer-box">⏱️ 30s</span>
+      <span id="score-text">Skor: 0</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="question" id="question-text"></div>
+    <div class="options" id="options-container"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn" id="next-btn" disabled>Lanjut →</button>
+  </div>
+
+  <div id="result-screen" class="result-screen">
+    <h1>🎉 Selesai!</h1>
+    <div class="score-big" id="final-score">0</div>
+    <p class="result-detail" id="final-detail"></p>
+    <p id="send-status" style="color: #667eea; font-weight: 600; font-size: 0.9em; margin-bottom: 10px;"></p>
+    <div class="review-list" id="review-list"></div>
+    <div class="btn-row" style="margin-top:20px;">
+      <button class="btn" id="restart-btn">🔄 Ulangi Quiz</button>
+      <button class="btn secondary" id="back-menu-btn">🏠 Menu</button>
+    </div>
+  </div>
+
+  <div id="lb-screen" class="hidden">
+    <h1>🏆 Leaderboard</h1>
+    <p class="subtitle">Top 10 skor terbaik (tersimpan di browser ini)</p>
+    <div id="lb-content"></div>
+    <div class="btn-row" style="margin-top:20px;">
+      <button class="btn secondary" id="clear-lb-btn">🗑️ Hapus Semua</button>
+      <button class="btn" id="lb-back-btn">🏠 Menu</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// ====== KONFIGURASI ======
+// ============================================================
+// ✅ URL Apps Script BARU
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyMRhzfpI6fJRNe2PDoc1lUMiCiKfQrjKUby0W3tDP92O3zpJtdkOFlWHS4Dtcl4E1L/exec';
+
+const CONFIG = {
+  minTimePerQuestion: 30,
+  maxTimePerQuestion: 120,
+  timePerQuestion: 0,
+  shuffleQuestions: true,
+  shuffleOptions: false,
+  soundEnabled: true,
+  leaderboardKey: 'irodori_60_leaderboard_v1',
+  maxLeaderboard: 10,
+  examModeDefault: false
+};
+
+let studentName = "";
+let studentClass = "";
+
+// ============================================================
+// ====== LOGIKA SESI (PER LINK) ======
+// ============================================================
+function getSessionInfo() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlSesi = urlParams.get('sesi');
+
+  if (urlSesi) {
+    return urlSesi.replace(/[^a-zA-Z0-9_\-]/g, ''); 
+  } else {
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
+    return `SESI-${dateStr}`;
+  }
+}
+
+let CURRENT_SESSION = getSessionInfo();
+
+// ============================================================
+// ====== AREA INPUT SOAL ======
+// Format tiap soal:
+// {
+//   q: "Teks pertanyaan / bacaan...",
+//   o: ["Pilihan A", "Pilihan B", "Pilihan C", "Pilihan D"],
+//   a: 1,               // index jawaban benar (0=A, 1=B, 2=C, 3=D)
+//   p: "Penjelasan jawaban...",  // opsional
+//   t: 40               // opsional: waktu khusus soal (detik)
+// }
+// ============================================================
+const QUESTIONS = [
+  // ================= BAGIAN I: KOTOBA / KANJI (30 SOAL) =================
+  { q: `毎朝、パンと______を食べます。`, o: ["みず", "ごはん", "おちゃ", "くだもの"], a: 1, p: `Kalimat "毎朝、パンとごはんを食べます" berarti "Setiap pagi saya makan roti dan nasi." Kata ごはん (nasi) cocok dengan konteks makanan pokok.` },
+  { q: `あしたは______がいいですね。さんぽしましょう。`, o: ["でんしゃ", "ほん", "かさ", "てんき"], a: 3, p: `"あしたは天気がいいですね" berarti "Besok cuacanya bagus ya." 天気 (cuaca) paling tepat untuk konteks mengajak jalan-jalan.` },
+  { q: `わたしの______は大阪にいます。とてもやさしいです。`, o: ["はは", "ちち", "あに", "あね"], a: 0, p: `"わたしの母は大阪にいます" berarti "Ibu saya ada di Osaka." 母 (ibu) sesuai dengan deskripsi "とてもやさしいです" (sangat baik).` },
+  { q: `この______はいくらですか。`, o: ["みせ", "ほん", "かさ", "とけい"], a: 1, p: `"この本はいくらですか" berarti "Buku ini berapa harganya?" 本 (buku) adalah benda yang umum ditanyakan harganya.` },
+  { q: `まいあさ、______をのみます。`, o: ["ごはん", "みず", "パン", "たまご"], a: 1, p: `"まいあさ、水をのみます" berarti "Setiap pagi saya minum air." 水 (air) adalah minuman yang tepat.` },
+  { q: `きょうは______がつよいです。コートをきます。`, o: ["あめ", "かぜ", "ゆき", "かぜ（風邪）"], a: 1, p: `"きょうは風がつよいです" berarti "Hari ini anginnya kencang." 風 (angin) cocok dengan "つよい" (kuat) dan tindakan memakai mantel.` },
+  { q: `わたしは______でかいものにいきます。`, o: ["でんしゃ", "くるま", "じてんしゃ", "あるいて"], a: 0, p: `"わたしは電車でかいものにいきます" berarti "Saya pergi berbelanja dengan kereta." 電車 (kereta) adalah moda transportasi yang umum.` },
+  { q: `あの______はしずかですね。だれもいません。`, o: ["へや", "にわ", "いえ", "みち"], a: 0, p: `"あの部屋はしずかですね" berarti "Kamar itu tenang ya." 部屋 (kamar) paling sesuai dengan "だれもいません" (tidak ada orang).` },
+  { q: `わたしのたんじょうびは______です。`, o: ["げつようび", "かようび", "すいようび", "もくようび"], a: 2, p: `"わたしのたんじょうびは水曜日です" berarti "Ulang tahun saya hari Rabu." 水曜日 (Rabu) adalah nama hari yang tepat.` },
+  { q: `この______はあたらしいです。とてもきれいです。`, o: ["くるま", "でんしゃ", "じてんしゃ", "バス"], a: 0, p: `"この車はあたらしいです" berarti "Mobil ini baru." 車 (mobil) cocok dengan deskripsi "きれいです" (cantik/bersih).` },
+  { q: `わたしは______がすきです。まいにちききます。`, o: ["えいが", "おんがく", "ほん", "スポーツ"], a: 1, p: `"わたしは音楽がすきです。まいにちききます" berarti "Saya suka musik. Setiap hari saya mendengarkannya." 音楽 (musik) sesuai dengan kata kerja ききます (mendengarkan).` },
+  { q: `あした、______へいきますか。`, o: ["だれ", "どこ", "いつ", "なに"], a: 1, p: `"あした、どこへいきますか" berarti "Besok pergi ke mana?" どこ (di mana) adalah kata tanya yang tepat untuk tujuan.` },
+  { q: `この______はおいしいです。よくたべます。`, o: ["くだもの", "やさい", "さかな", "にく"], a: 0, p: `"この果物はおいしいです" berarti "Buah ini enak." 果物 (buah) cocok dengan "よくたべます" (sering makan).` },
+  { q: `わたしの______はとうきょうにすんでいます。`, o: ["ともだち", "かぞく", "せんせい", "がくせい"], a: 1, p: `"わたしの家族はとうきょうにすんでいます" berarti "Keluarga saya tinggal di Tokyo." 家族 (keluarga) paling tepat untuk konteks tempat tinggal.` },
+  { q: `まいばん、______をよんでからねます。`, o: ["ほん", "しんぶん", "ざっし", "てがみ"], a: 0, p: `"まいばん、本をよんでからねます" berarti "Setiap malam, saya membaca buku sebelum tidur." 本 (buku) adalah bacaan yang umum.` },
+  { q: `きょうは______がふっています。かさをさします。`, o: ["ゆき", "かぜ", "あめ", "くもり"], a: 2, p: `"きょうは雨がふっています。かさをさします" berarti "Hari ini hujan turun. Saya memakai payung." 雨 (hujan) sesuai dengan tindakan memakai payung.` },
+  { q: `この______はたかいです。でも、とてもいいです。`, o: ["とけい", "かばん", "くつ", "ぼうし"], a: 0, p: `"この時計はたかいです" berarti "Jam ini mahal." 時計 (jam) adalah benda yang umum dinilai mahal.` },
+  { q: `わたしは______がすきじゃありません。からいですから。`, o: ["あまいもの", "からいもの", "すっぱいもの", "おいしいもの"], a: 1, p: `"わたしはからいものがすきじゃありません" berarti "Saya tidak suka makanan pedas." からいもの (makanan pedas) sesuai dengan alasan "からいですから" (karena pedas).` },
+  { q: `あしたは______です。やすみます。`, o: ["げつようび", "にちようび", "どようび", "きんようび"], a: 1, p: `"あしたは日曜日です。やすみます" berarti "Besok hari Minggu. Saya libur." 日曜日 (Minggu) adalah hari libur.` },
+  { q: `この______はとてもべんりです。まいにちつかいます。`, o: ["でんわ", "テレビ", "パソコン", "カメラ"], a: 0, p: `"この電話はとてもべんりです" berarti "Telepon ini sangat praktis." 電話 (telepon) cocok dengan "まいにちつかいます" (dipakai setiap hari).` },
+  { q: `わたしは______でにほんごをべんきょうします。`, o: ["がっこう", "いえ", "としょかん", "カフェ"], a: 2, p: `"わたしは図書館でにほんごをべんきょうします" berarti "Saya belajar bahasa Jepang di perpustakaan." 図書館 (perpustakaan) adalah tempat belajar yang tepat.` },
+  { q: `あの______はあかいです。とてもきれいです。`, o: ["はな", "やま", "うみ", "そら"], a: 0, p: `"あのはなはあかいです" berarti "Bunga itu merah." 花 (bunga) cocok dengan warna merah dan keindahan.` },
+  { q: `わたしは______がすきです。よくえいがをみます。`, o: ["おんがく", "えいが", "スポーツ", "どくしょ"], a: 1, p: `"わたしは映画がすきです。よくえいがをみます" berarti "Saya suka film. Sering menonton film." 映画 (film) sesuai dengan kata kerja みます (menonton).` },
+  { q: `この______はおもいです。ひとりでもてません。`, o: ["かばん", "ほん", "ペン", "かさ"], a: 0, p: `"このかばんはおもいです" berarti "Tas ini berat." かばん (tas) adalah benda yang bisa berat dan dibawa.` },
+  { q: `あしたのあさ、______をたべますか。`, o: ["なに", "どこ", "だれ", "いつ"], a: 0, p: `"あしたのあさ、なにをたべますか" berarti "Besok pagi makan apa?" なに (apa) adalah kata tanya untuk makanan.` },
+  { q: `わたしの______はやさしいです。いつもたすけてくれます。`, o: ["せんせい", "ともだち", "かぞく", "あに"], a: 1, p: `"わたしの友だちはやさしいです" berarti "Teman saya baik." 友だち (teman) cocok dengan "いつもたすけてくれます" (selalu membantu).` },
+  { q: `この______はとてもふるいです。でも、まだつかえます。`, o: ["いえ", "くるま", "でんわ", "テレビ"], a: 0, p: `"この家はとてもふるいです" berarti "Rumah ini sangat tua." 家 (rumah) cocok dengan deskripsi bangunan tua.` },
+  { q: `まいあさ、______をたべます。それから、がっこうへいきます。`, o: ["ごはん", "パン", "たまご", "くだもの"], a: 1, p: `"まいあさ、パンをたべます" berarti "Setiap pagi saya makan roti." パン (roti) adalah sarapan umum.` },
+  { q: `あの______はしずかで、きれいです。あそこでやすみましょう。`, o: ["こうえん", "みせ", "えき", "がっこう"], a: 0, p: `"あの公園はしずかで、きれいです" berarti "Taman itu tenang dan indah." 公園 (taman) cocok untuk beristirahat.` },
+  { q: `わたしは______ができます。ちょっとだけですけど。`, o: ["にほんご", "えいご", "ちゅうごくご", "かんこくご"], a: 0, p: `"わたしは日本語ができます" berarti "Saya bisa bahasa Jepang." 日本語 (bahasa Jepang) sesuai dengan konteks kemampuan.` },
+
+  // ================= BAGIAN II: HYOUGEN (20 SOAL) =================
+  { q: `A: 「すみません、えきはどこですか。」\nB: 「（　）」`, o: ["えきはあそこです。", "えきはいくらですか。", "えきはなんじですか。", "えきはだれですか。"], a: 0, p: `Pertanyaan "Di mana stasiun?" dijawab dengan menunjukkan lokasi: "Stasiun di sana."` },
+  { q: `A: 「ありがとうございます。」\nB: 「（　）」`, o: ["すみません。", "どういたしまして。", "はじめまして。", "おねがいします。"], a: 1, p: `Ucapan "Terima kasih" dijawab dengan "Sama-sama" (どういたしまして).` },
+  { q: `A: 「このりんごはいくらですか。」\nB: 「（　）」`, o: ["ひとつで100えんです。", "りんごがすきです。", "りんごをたべます。", "りんごはあかいです。"], a: 0, p: `Pertanyaan harga dijawab dengan nominal: "Satu buah 100 yen."` },
+  { q: `A: 「おなかがすきましたね。」\nB: 「（　）」`, o: ["なにかたべましょう。", "なにをのみましたか。", "どこへいきますか。", "だれとたべますか。"], a: 0, p: `"Saya lapar" direspons dengan ajakan makan: "Ayo makan sesuatu."` },
+  { q: `A: 「しつれいします。」\nB: 「（　）」`, o: ["しつれいしました。", "いってらっしゃい。", "はじめまして。", "おかえりなさい。"], a: 1, p: `"Permisi" (saat keluar) dijawab dengan "Hati-hati di jalan" (いってらっしゃい).` },
+  { q: `A: 「にほんごがじょうずですね。」\nB: 「（　）」`, o: ["はい、そうです。", "いいえ、まだまだです。", "にほんごがすきです。", "にほんごをべんきょうします。"], a: 1, p: `Pujian "Bahasa Jepangnya bagus" dijawab dengan rendah hati: "Tidak, masih jauh."` },
+  { q: `A: 「あした、ひまですか。」\nB: 「（　）」`, o: ["はい、ひまじゃないです。", "いいえ、ひまです。", "はい、ひまです。", "いいえ、あしたです。"], a: 2, p: `"Besok luang?" dijawab "Ya, luang."` },
+  { q: `A: 「コーヒーとこうちゃ、どちらがいいですか。」\nB: 「（　）」`, o: ["コーヒーがいいです。", "コーヒーをのみます。", "コーヒーはあついです。", "コーヒーがすきです。"], a: 0, p: `"Kopi atau teh, mana yang baik?" dijawab "Kopi yang baik."` },
+  { q: `A: 「このでんしゃはとうきょうへいきますか。」\nB: 「（　）」`, o: ["はい、いきます。", "はい、とうきょうです。", "いいえ、でんしゃです。", "いいえ、いきます。"], a: 0, p: `"Apakah kereta ini ke Tokyo?" dijawab "Ya, pergi."` },
+  { q: `A: 「おてあらいはどこですか。」\nB: 「（　）」`, o: ["おてあらいはきれいです。", "おてあらいはあそこです。", "おてあらいはなんじですか。", "おてあらいはいくらですか。"], a: 1, p: `"Di mana toilet?" dijawab dengan menunjukkan lokasi: "Toilet di sana."` },
+  { q: `A: 「いっしょにひるごはんをたべませんか。」\nB: 「（　）」`, o: ["いいですね。いきましょう。", "ひるごはんはたべません。", "ひるごはんをたべました。", "ひるごはんはおいしいです。"], a: 0, p: `Ajakan makan siang direspons positif: "Bagus ya. Ayo pergi."` },
+  { q: `A: 「ごめんなさい。おそくなりました。」\nB: 「（　）」`, o: ["だいじょうぶですよ。", "おそいですね。", "はやいですね。", "ごめんなさい。"], a: 0, p: `Permintaan maaf karena terlambat dijawab "Tidak apa-apa."` },
+  { q: `A: 「おしごとはなんですか。」\nB: 「（　）」`, o: ["がくせいです。", "にほんじんです。", "とうきょうにいます。", "２５さいです。"], a: 0, p: `"Pekerjaannya apa?" dijawab "Saya siswa."` },
+  { q: `A: 「まどをあけてもいいですか。」\nB: 「（　）」`, o: ["はい、あけましょう。", "はい、どうぞ。", "いいえ、あけます。", "まどをしめてください。"], a: 1, p: `"Boleh buka jendela?" dijawab "Ya, silakan."` },
+  { q: `A: 「これはなんですか。」\nB: 「（　）」`, o: ["それはペンです。", "これはペンです。", "あれはペンです。", "ペンはどこですか。"], a: 1, p: `"Ini apa?" dijawab "Ini pena." (menunjuk benda di dekat pembicara).` },
+  { q: `A: 「にちようび、なにをしましたか。」\nB: 「（　）」`, o: ["えいがをみました。", "えいがをみます。", "えいがをみましょう。", "えいががすきです。"], a: 0, p: `"Hari Minggu melakukan apa?" dijawab dengan bentuk lampau: "Menonton film."` },
+  { q: `A: 「おさけはのみますか。」\nB: 「（　）」`, o: ["いいえ、のみます。", "はい、のみません。", "いいえ、のみません。", "おさけがすきです。"], a: 2, p: `"Minum sake?" dijawab "Tidak, tidak minum."` },
+  { q: `A: 「でんわばんごうを おしえてください。」\nB: 「（　）」`, o: ["はい、どうぞ。", "はい、わかりました。", "はい、でんわです。", "はい、ばんごうです。"], a: 1, p: `"Tolong beri tahu nomor telepon" dijawab "Ya, mengerti."` },
+  { q: `A: 「おつかれさまでした。」\nB: 「（　）」`, o: ["おつかれさまでした。", "ありがとうございました。", "はじめまして。", "しつれいします。"], a: 0, p: `"Terima kasih atas kerja kerasnya" dijawab dengan ucapan yang sama.` },
+  { q: `A: 「パーティーにいきますか。」\nB: 「（　）」`, o: ["はい、いくつもりです。", "はい、いくかもしれません。", "はい、いくはずです。", "はい、いきます。"], a: 3, p: `"Pergi ke pesta?" dijawab "Ya, pergi."` },
+
+  // ================= BAGIAN III: DOKKAI (10 SOAL) =================
+  // ---- Teks 1 ----
+  { q: `【読解 1】\nわたしは田中さんと申します。東京に住んでいます。毎朝、電車で会社へ行きます。会社は新宿にあります。仕事は9時から5時までです。昼休みは12時から1時までです。いつも会社の食堂で昼ごはんを食べます。\n\n田中さんは何で会社へ行きますか。`, o: ["バスで", "電車で", "車で", "自転車で"], a: 1, p: `Teks menyebut "毎朝、電車で会社へ行きます" (setiap pagi pergi ke kantor dengan kereta).`, t: 75 },
+  { q: `【読解 1】\nわたしは田中さんと申します。東京に住んでいます。毎朝、電車で会社へ行きます。会社は新宿にあります。仕事は9時から5時までです。昼休みは12時から1時までです。いつも会社の食堂で昼ごはんを食べます。\n\n田中さんの会社はどこにありますか。`, o: ["東京", "新宿", "食堂", "駅"], a: 1, p: `Teks menyebut "会社は新宿にあります" (kantor ada di Shinjuku).`, t: 75 },
+  // ---- Teks 2 ----
+  { q: `【読解 2】\nわたしは毎日日本語を勉強しています。朝は1時間、夜は2時間勉強します。日本語の漢字は難しいですが、おもしろいです。週末は日本人の友だちと話す練習をします。来年、日本へ行きたいです。\n\nこの人は毎日何時間日本語を勉強しますか。`, o: ["1時間", "2時間", "3時間", "4時間"], a: 2, p: `Teks menyebut "朝は1時間、夜は2時間勉強します" (pagi 1 jam, malam 2 jam) = total 3 jam.`, t: 75 },
+  { q: `【読解 2】\nわたしは毎日日本語を勉強しています。朝は1時間、夜は2時間勉強します。日本語の漢字は難しいですが、おもしろいです。週末は日本人の友だちと話す練習をします。来年、日本へ行きたいです。\n\nこの人は週末に何をしますか。`, o: ["漢字を勉強します", "日本人の友だちと話します", "日本へ行きます", "日本語の本を読みます"], a: 1, p: `Teks menyebut "週末は日本人の友だちと話す練習をします" (akhir pekan berlatih berbicara dengan teman orang Jepang).`, t: 75 },
+  // ---- Teks 3 ----
+  { q: `【読解 3】\nきのう、友だちと映画を見に行きました。映画は2時間ぐらいでした。とてもおもしろかったです。映画の後で、レストランで晩ごはんを食べました。わたしは魚を食べました。友だちは肉を食べました。それから、家へ帰りました。\n\nきのう、何を見ましたか。`, o: ["映画", "テレビ", "スポーツ", "音楽"], a: 0, p: `Teks menyebut "友だちと映画を見に行きました" (pergi menonton film).`, t: 75 },
+  { q: `【読解 3】\nきのう、友だちと映画を見に行きました。映画は2時間ぐらいでした。とてもおもしろかったです。映画の後で、レストランで晩ごはんを食べました。わたしは魚を食べました。友だちは肉を食べました。それから、家へ帰りました。\n\nこの人は晩ごはんに何を食べましたか。`, o: ["肉", "魚", "野菜", "パン"], a: 1, p: `Teks menyebut "わたしは魚を食べました" (saya makan ikan).`, t: 75 },
+  // ---- Teks 4 ----
+  { q: `【読解 4】\nわたしの家族は4人です。父と母と妹とわたしです。父は会社員です。母は先生です。妹は大学生です。わたしは高校生です。家族はみんな東京に住んでいます。日曜日はいつも一緒に晩ごはんを食べます。\n\nこの人の家族は何人ですか。`, o: ["3人", "4人", "5人", "6人"], a: 1, p: `Teks menyebut "家族は4人です" (keluarga ada 4 orang).`, t: 75 },
+  { q: `【読解 4】\nわたしの家族は4人です。父と母と妹とわたしです。父は会社員です。母は先生です。妹は大学生です。わたしは高校生です。家族はみんな東京に住んでいます。日曜日はいつも一緒に晩ごはんを食べます。\n\n母の仕事は何ですか。`, o: ["会社員", "先生", "大学生", "高校生"], a: 1, p: `Teks menyebut "母は先生です" (ibu adalah guru).`, t: 75 },
+  // ---- Teks 5 ----
+  { q: `【読解 5】\nわたしは毎朝7時に起きます。顔を洗って、朝ごはんを食べます。それから、8時に家を出ます。学校までバスで30分かかります。学校は9時に始まります。午後3時に終わります。放課後は友だちとサッカーをします。\n\nこの人は何時に家を出ますか。`, o: ["7時", "8時", "9時", "3時"], a: 1, p: `Teks menyebut "8時に家を出ます" (keluar rumah jam 8).`, t: 75 },
+  { q: `【読解 5】\nわたしは毎朝7時に起きます。顔を洗って、朝ごはんを食べます。それから、8時に家を出ます。学校までバスで30分かかります。学校は9時に始まります。午後3時に終わります。放課後は友だちとサッカーをします。\n\n学校は何時に終わりますか。`, o: ["3時", "4時", "5時", "6時"], a: 0, p: `Teks menyebut "午後3時に終わります" (berakhir jam 3 sore).`, t: 75 },
+];
+
+// ============================================================
+// ====== IDENTITAS UJIAN ======
+// ============================================================
+const EXAM_CONFIG = {
+  idManual: '',
+  namaManual: ''
+};
+
+function generateExamFingerprint() {
+  const str = JSON.stringify(QUESTIONS.map(q => ({ q: q.q, o: q.o, a: q.a })));
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+    hash = hash & hash;
+  }
+  return 'UJIAN-' + Math.abs(hash).toString(36).toUpperCase();
+}
+
+function getExamInfo() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlUjian = urlParams.get('ujian');
+  const urlNama = urlParams.get('nama');
+
+  if (urlUjian) {
+    return { id: urlUjian.replace(/[^a-zA-Z0-9_\-]/g, ''), nama: urlNama || urlUjian, auto: false };
+  }
+  if (EXAM_CONFIG.idManual) {
+    return { id: EXAM_CONFIG.idManual, nama: EXAM_CONFIG.namaManual || EXAM_CONFIG.idManual, auto: false };
+  }
+  const fp = generateExamFingerprint();
+  return { id: fp, nama: `Ujian ${fp.replace('UJIAN-', '')}`, auto: true };
+}
+
+let CURRENT_EXAM = getExamInfo();
+
+function updateSessionUI() {
+  document.getElementById('session-id-display').textContent = CURRENT_SESSION;
+  
+  const box = document.querySelector('.session-box');
+  if (box && !document.getElementById('exam-info-display')) {
+    const div = document.createElement('div');
+    div.id = 'exam-info-display';
+    div.style.cssText = 'margin-top:10px;padding-top:10px;border-top:1px dashed #dde1ff;font-size:0.85em;color:#555;';
+    div.innerHTML = `📝 Ujian: <strong style="color:#667eea;">${CURRENT_EXAM.nama}</strong><br>
+      <span style="font-size:0.9em;color:#888;">ID: <code>${CURRENT_EXAM.id}</code>
+      ${CURRENT_EXAM.auto ? '(otomatis dari soal)' : '(manual)'}</span>`;
+    box.appendChild(div);
+  }
+}
+
+function copySessionLink() {
+  const url = new URL(window.location.href);
+  url.searchParams.set('sesi', CURRENT_SESSION);
+  url.searchParams.set('ujian', CURRENT_EXAM.id);
+  url.searchParams.set('nama', CURRENT_EXAM.nama);
+  const link = url.toString();
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(link).then(() => {
+      alert('✅ Link Ujian Berhasil Disalin!\n\n📝 Ujian: ' + CURRENT_EXAM.nama
+        + '\n🗂️ ID: ' + CURRENT_EXAM.id
+        + '\n🔗 Sesi: ' + CURRENT_SESSION
+        + '\n\nLink:\n' + link);
+    }).catch(() => prompt('Salin link ini secara manual:', link));
+  } else {
+    prompt('Salin link ini secara manual:', link);
+  }
+}
+
+// ============================================================
+// ====== LOGIKA QUIZ ======
+// ============================================================
+const LABELS = ['A','B','C','D'];
+let current = 0, score = 0, answered = false;
+let order = [], userAnswers = [], examMode = false;
+let timerInterval = null, timeLeft = 0;
+let currentQ = null;
+
+function getQuestionTime(q) {
+  if (q.t && q.t > 0) return Math.max(CONFIG.minTimePerQuestion, q.t);
+  if (CONFIG.timePerQuestion > 0) return CONFIG.timePerQuestion;
+  const qLen = (q.q || '').length;
+  const oLen = (q.o || []).reduce((s, o) => s + (o || '').length, 0);
+  const totalLen = qLen + oLen;
+  const extra = Math.max(0, Math.ceil((totalLen - 80) / 20));
+  return Math.min(CONFIG.minTimePerQuestion + extra, CONFIG.maxTimePerQuestion);
+}
+
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch(e) { audioCtx = null; }
+  }
+}
+function playTone(freq, duration, type='sine', vol=0.15) {
+  if (!CONFIG.soundEnabled || !audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(); osc.stop(audioCtx.currentTime + duration);
+}
+function soundCorrect() { initAudio(); playTone(660,0.12,'sine'); setTimeout(()=>playTone(880,0.18,'sine'),110); }
+function soundWrong()   { initAudio(); playTone(220,0.25,'sawtooth',0.12); }
+function soundTick()    { if (!CONFIG.soundEnabled || !audioCtx) return; playTone(1000,0.05,'square',0.05); }
+function soundCountdownBeep() { initAudio(); playTone(520, 0.15, 'sine', 0.18); }
+function soundCountdownGo()   { initAudio(); playTone(660,0.10,'sine'); setTimeout(()=>playTone(880,0.12,'sine'),90); setTimeout(()=>playTone(1100,0.20,'sine'),180); }
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function showScreen(id) {
+  ['menu-screen','quiz-screen','result-screen','lb-screen'].forEach(s => {
+    document.getElementById(s).classList.add('hidden');
+    document.getElementById(s).classList.remove('show');
+  });
+  document.getElementById(id).classList.remove('hidden');
+  if (id === 'result-screen') document.getElementById(id).classList.add('show');
+}
+
+// ============================================================
+// ====== COUNTDOWN 3, 2, 1, MULAI! ======
+// ============================================================
+function runCountdown(callback) {
+  const overlay = document.getElementById('countdown-overlay');
+  const numEl   = document.getElementById('countdown-number');
+  const hintEl  = document.getElementById('countdown-hint');
+
+  overlay.classList.add('show');
+  hintEl.textContent = 'Bersiap…';
+
+  const seq = ['3', '2', '1', 'MULAI!'];
+  let i = 0;
+
+  const tick = () => {
+    if (i >= seq.length) {
+      overlay.classList.remove('show');
+      setTimeout(callback, 350);
+      return;
+    }
+    const label = seq[i];
+    numEl.textContent = label;
+    numEl.classList.remove('pop', 'go');
+    void numEl.offsetWidth;
+    if (label === 'MULAI!') {
+      numEl.classList.add('go');
+      soundCountdownGo();
+      hintEl.textContent = 'Semoga berhasil! 🎌';
+    } else {
+      soundCountdownBeep();
+      hintEl.textContent = 'Bersiap…';
+    }
+    numEl.classList.add('pop');
+    i++;
+    setTimeout(tick, 1000);
+  };
+  tick();
+}
+
+function startQuiz(isExam) {
+  studentName = document.getElementById('student-name').value.trim();
+  studentClass = document.getElementById('student-class').value.trim();
+  
+  if (!studentName || !studentClass) {
+    alert("Mohon isi Nama dan Kelas terlebih dahulu!");
+    return;
+  }
+
+  if (QUESTIONS.length === 0) { 
+    alert('Belum ada soal. Silakan isi data soal terlebih dahulu di dalam kode HTML pada bagian QUESTIONS.'); 
+    return; 
+  }
+  
+  initAudio();
+  examMode = isExam;
+
+  runCountdown(() => {
+    current = 0; score = 0; answered = false;
+    userAnswers = [];
+    order = CONFIG.shuffleQuestions
+      ? shuffle(QUESTIONS.map((_, i) => i))
+      : QUESTIONS.map((_, i) => i);
+    showScreen('quiz-screen');
+    renderQuestion();
+  });
+}
+
+function renderQuestion() {
+  answered = false;
+  const qIdx = order[current];
+  let q = QUESTIONS[qIdx];
+  let options = q.o.slice();
+  let correct = q.a;
+
+  if (CONFIG.shuffleOptions) {
+    const pairs = options.map((opt, i) => ({ opt, isCorrect: i === correct }));
+    const shuffled = shuffle(pairs);
+    options = shuffled.map(p => p.opt);
+    correct = shuffled.findIndex(p => p.isCorrect);
+  }
+
+  q = { ...q, o: options, a: correct };
+  currentQ = q;
+
+  document.getElementById('question-text').textContent = q.q;
+  document.getElementById('progress-text').textContent = `Soal ${current + 1} / ${order.length}`;
+  document.getElementById('score-text').textContent = `Skor: ${score}`;
+  document.getElementById('progress-fill').style.width = `${(current / order.length) * 100}%`;
+
+  const container = document.getElementById('options-container');
+  container.innerHTML = '';
+  q.o.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="label">${LABELS[i]}.</span> <span>${opt}</span>`;
+    btn.onclick = () => selectAnswer(i, q);
+    container.appendChild(btn);
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback';
+  fb.innerHTML = '';
+  document.getElementById('next-btn').disabled = true;
+  document.getElementById('next-btn').textContent = current === order.length - 1 ? 'Lihat Hasil →' : 'Lanjut →';
+
+  startTimer(q);
+}
+
+function startTimer(q) {
+  clearInterval(timerInterval);
+  const timerEl = document.getElementById('timer-display');
+  const total = getQuestionTime(q);
+  if (total <= 0) { timerEl.style.display = 'none'; return; }
+  timerEl.style.display = 'inline-block';
+  timeLeft = total;
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 5 && timeLeft > 0) soundTick();
+    if (timeLeft <= 0) { clearInterval(timerInterval); timeOut(); }
+  }, 1000);
+}
+function updateTimerDisplay() {
+  const el = document.getElementById('timer-display');
+  el.textContent = `⏱️ ${timeLeft}s`;
+  el.classList.toggle('warning', timeLeft <= 5);
+}
+
+function timeOut() {
+  if (answered) return;
+  answered = true;
+  const q = currentQ;
+  const qIdx = order[current];
+  userAnswers.push({ qIdx, selected: -1, correct: q.a, isCorrect: false, timedOut: true });
+
+  document.querySelectorAll('.option').forEach((el, i) => {
+    el.classList.add('disabled');
+    if (i === q.a) el.classList.add('correct');
+  });
+
+  if (!examMode) {
+    soundWrong();
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback show wrong';
+    fb.innerHTML = `⏰ Waktu habis! Jawaban benar: <b>${LABELS[q.a]}. ${q.o[q.a]}</b>${q.p ? `<small>💡 ${q.p}</small>` : ''}`;
+  }
+  document.getElementById('next-btn').disabled = false;
+  document.getElementById('score-text').textContent = `Skor: ${score}`;
+}
+
+function selectAnswer(selected, q) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+
+  const qIdx = order[current];
+  const correct = q.a;
+  const options = document.querySelectorAll('.option');
+
+  if (examMode) {
+    options.forEach((el, i) => {
+      el.classList.add('disabled');
+      if (i === selected) el.classList.add('selected');
+    });
+    if (selected === correct) score++;
+    userAnswers.push({ qIdx, selected, correct, isCorrect: selected === correct });
+  } else {
+    options.forEach((el, i) => {
+      el.classList.add('disabled');
+      if (i === correct) el.classList.add('correct');
+      if (i === selected && i !== correct) el.classList.add('wrong');
+    });
+    const isCorrect = selected === correct;
+    if (isCorrect) { score++; soundCorrect(); } else soundWrong();
+    userAnswers.push({ qIdx, selected, correct, isCorrect });
+
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback show ' + (isCorrect ? 'correct' : 'wrong');
+    fb.innerHTML = isCorrect
+      ? `✅ Benar!${q.p ? `<small>💡 ${q.p}</small>` : ''}`
+      : `❌ Salah. Jawaban benar: <b>${LABELS[correct]}. ${q.o[correct]}</b>${q.p ? `<small>💡 ${q.p}</small>` : ''}`;
+  }
+
+  document.getElementById('score-text').textContent = `Skor: ${score}`;
+  document.getElementById('next-btn').disabled = false;
+}
+
+document.getElementById('next-btn').onclick = () => {
+  current++;
+  if (current >= order.length) showResult();
+  else renderQuestion();
+};
+
+function showResult() {
+  clearInterval(timerInterval);
+  showScreen('result-screen');
+  const pct = Math.round((score / order.length) * 100);
+  document.getElementById('final-score').textContent = `${score} / ${order.length}`;
+  let msg = '';
+  if (pct >= 90) msg = '🌟 Luar biasa! Pemahaman kamu sangat bagus!';
+  else if (pct >= 70) msg = '👍 Bagus! Sedikit lagi sempurna.';
+  else if (pct >= 50) msg = '💪 Cukup baik. Terus berlatih!';
+  else msg = '📚 Jangan menyerah. Ulangi dan pelajari lagi!';
+  
+  document.getElementById('final-detail').innerHTML =
+    `${pct}% benar<br>${msg}<br><small style="color:#999;">Sesi: ${CURRENT_SESSION} | Mode: ${examMode ? 'Ujian' : 'Latihan'} | Siswa: ${studentName} (${studentClass})</small>`;
+
+  const list = document.getElementById('review-list');
+  list.innerHTML = '<h3 style="margin-bottom:10px;color:#333;">Review Jawaban &amp; Penjelasan:</h3>';
+  
+  let wrongNumbers = [];
+  userAnswers.forEach((ua, i) => {
+    const q = QUESTIONS[ua.qIdx];
+    const div = document.createElement('div');
+    div.className = 'review-item ' + (ua.isCorrect ? 'correct' : 'wrong');
+    const yourAns = ua.selected === -1
+      ? '<span class="no">(tidak dijawab / waktu habis)</span>'
+      : `<span class="${ua.isCorrect ? 'ok' : 'no'}">${LABELS[ua.selected]}. ${q.o[ua.selected]}</span>`;
+    
+    if (!ua.isCorrect) {
+      wrongNumbers.push(i + 1);
+    }
+
+    div.innerHTML = `
+      <div class="review-q">${i + 1}. ${q.q}</div>
+      <div class="review-a">
+        Jawabanmu: ${yourAns}
+        ${!ua.isCorrect ? ` | Benar: <span class="ok">${LABELS[ua.correct]}. ${q.o[ua.correct]}</span>` : ''}
+      </div>
+      ${q.p ? `<div class="review-p">💡 ${q.p}</div>` : ''}`;
+    list.appendChild(div);
+  });
+
+  saveToLeaderboard(score, order.length);
+
+  sendReportToGoogleSheets(score, order.length, pct, wrongNumbers.join(', '));
+}
+
+// ============================================================
+// ====== FUNGSI PENGIRIMAN KE GOOGLE SHEETS ======
+// ============================================================
+function sendReportToGoogleSheets(score, total, pct, wrongNumbers) {
+  const statusEl = document.getElementById('send-status');
+  
+  if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('URL_HASIL_DEPLOY')) {
+    statusEl.innerHTML = "⚠️ URL Google Apps Script belum diatur di <code>GOOGLE_SCRIPT_URL</code>.";
+    statusEl.style.color = "red";
+    return;
+  }
+
+  statusEl.textContent = "⏳ Mengirim laporan ke Google Sheets dan Email...";
+  statusEl.style.color = "#667eea";
+
+  const now = new Date();
+  const attemptId = 'ATT-' + now.getTime() + '-' + Math.random().toString(36).substring(2, 6);
+
+  const payload = {
+    sesi: CURRENT_SESSION,
+    ujianId: CURRENT_EXAM.id,
+    ujianNama: CURRENT_EXAM.nama,
+    attemptId: attemptId,
+    tanggal: now.toLocaleDateString('id-ID'),
+    waktu: now.toLocaleTimeString('id-ID'),
+    nama: studentName,
+    kelas: studentClass,
+    kategori: "Irodori Pink & Kuning",
+    mode: examMode ? "Ujian" : "Latihan",
+    skor: score,
+    total: total,
+    persentase: pct,
+    detailSalah: wrongNumbers || "Tidak ada"
+  };
+
+  const bodyParams = new URLSearchParams();
+  bodyParams.append('data', JSON.stringify(payload));
+
+  fetch(GOOGLE_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: bodyParams.toString()
+  })
+  .then(async (res) => {
+    const text = await res.text();
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${text}`);
+    let json = null;
+    try { json = JSON.parse(text); } catch(e) { json = { raw: text }; }
+    return json;
+  })
+  .then((json) => {
+    if (json && json.ok === true) {
+      const emailInfo = json.email ? `Email: ${json.email}` : 'Email status tidak diketahui';
+      statusEl.innerHTML = `✅ Laporan berhasil dikirim!<br><small>${emailInfo}</small>`;
+      statusEl.style.color = "#28a745";
+    } else if (json && json.ok === false) {
+      statusEl.innerHTML = `⚠️ Server menolak: ${json.error || 'tidak ada detail'}`;
+      statusEl.style.color = "#dc3545";
+    } else {
+      statusEl.innerHTML = `⚠️ Response tidak dikenali. Cek Apps Script.<br><small>${JSON.stringify(json).slice(0,150)}</small>`;
+      statusEl.style.color = "#dc3545";
+    }
+  })
+  .catch((error) => {
+    console.error('Error kirim laporan!', error);
+    statusEl.innerHTML = `❌ Gagal kirim laporan: ${error.message}<br><small>Periksa CORS & URL Apps Script.</small>`;
+    statusEl.style.color = "red";
+  });
+}
+
+function getLeaderboard() {
+  try { return JSON.parse(localStorage.getItem(CONFIG.leaderboardKey)) || []; }
+  catch(e) { return []; }
+}
+function saveToLeaderboard(sc, total) {
+  const entry = {
+    score: sc, total: total,
+    pct: Math.round((sc / total) * 100),
+    mode: examMode ? 'Ujian' : 'Latihan',
+    date: new Date().toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })
+  };
+  const lb = getLeaderboard();
+  lb.push(entry);
+  lb.sort((a, b) => b.pct - a.pct || b.score - a.score);
+  localStorage.setItem(CONFIG.leaderboardKey, JSON.stringify(lb.slice(0, CONFIG.maxLeaderboard)));
+}
+function renderLeaderboard() {
+  const lb = getLeaderboard();
+  const content = document.getElementById('lb-content');
+  if (lb.length === 0) {
+    content.innerHTML = '<p class="lb-empty">Belum ada skor tersimpan.<br>Selesaikan quiz dulu untuk masuk leaderboard!</p>';
+    return;
+  }
+  let html = '<table class="lb-table"><thead><tr><th>#</th><th>Skor</th><th>%</th><th>Mode</th><th>Tanggal</th></tr></thead><tbody>';
+  lb.forEach((e, i) => {
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+    html += `<tr><td>${medal}</td><td>${e.score}/${e.total}</td><td>${e.pct}%</td><td>${e.mode}</td><td>${e.date}</td></tr>`;
+  });
+  html += '</tbody></table>';
+  content.innerHTML = html;
+}
+
+document.getElementById('copy-session-btn').addEventListener('click', copySessionLink);
+
+document.getElementById('start-normal-btn').onclick = () => startQuiz(false);
+document.getElementById('start-exam-btn').onclick = () => startQuiz(true);
+document.getElementById('restart-btn').onclick = () => startQuiz(examMode);
+document.getElementById('back-menu-btn').onclick = () => showScreen('menu-screen');
+document.getElementById('show-lb-btn').onclick = () => { renderLeaderboard(); showScreen('lb-screen'); };
+document.getElementById('lb-back-btn').onclick = () => showScreen('menu-screen');
+document.getElementById('clear-lb-btn').onclick = () => {
+  if (confirm('Hapus semua skor di leaderboard?')) {
+    localStorage.removeItem(CONFIG.leaderboardKey);
+    renderLeaderboard();
+  }
+};
+
+function updateMenuInfo() {
+  const n = QUESTIONS.length;
+  document.getElementById('menu-subtitle').textContent = `${n} Soal • Referensi IRODORI`;
+  document.getElementById('timer-badge').textContent = `⏱️ Min ${CONFIG.minTimePerQuestion}s (adaptif)`;
+}
+
+updateMenuInfo();
+updateSessionUI(); 
+showScreen('menu-screen');
+</script>
+</body>
+</html>
